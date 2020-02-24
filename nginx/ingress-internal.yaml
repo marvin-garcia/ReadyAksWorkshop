@@ -1,0 +1,14 @@
+controller:
+  name: __replace__
+  ingressClass: __replace__
+  replicaCount: 2
+  autoscaling:
+    enabled: true
+    minReplicas: 2
+    maxReplicas: 11
+    targetCPUUtilizationPercentage: 60
+    targetMemoryUtilizationPercentage: 60
+  service:
+    loadBalancerIP: __replace__
+    annotations:
+      service.beta.kubernetes.io/azure-load-balancer-internal: "true"

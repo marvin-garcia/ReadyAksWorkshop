@@ -1,0 +1,21 @@
+# More info at:
+# - https://kubernetes.io/docs/reference/access-authn-authz/rbac/#default-roles-and-role-bindings
+# For a full list of rules and verbs, run kubectl describe ClusterRole admin
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: cluster-reader
+rules:
+- apiGroups: [""]
+  resources: [ "deployments", "replicaSets", "pods", "services", "ingress", "cronjobs", "jobs" ]
+  verbs: ["get", "watch", "list"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: namespace-creator
+rules:
+- apiGroups: [""]
+  resources: [ "namespaces" ]
+  verbs: ["create", "update", "get", "watch"]
+---

@@ -1,0 +1,23 @@
+app:
+  namespace:
+    name: __replace__
+    resourcequota:
+      name: cpu-memory-quota
+      requests:
+        cpu: 2
+        memory: 7Gi
+      limits:
+        cpu: 20
+        memory: 70Gi
+role:
+  namespaceadmin:
+    name: app-namespace-admin
+rolebinding:
+  clusteradmin:
+    subject:
+      kind: Group
+      name: __replace__
+  namespaceadmin:
+    subjects:
+      kind: Group
+      name: __replace__

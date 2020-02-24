@@ -1,0 +1,14 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: admins-app1-namespace
+  namespace: app1
+subjects:
+- kind: User
+  name: 3509c921-d5d2-4e32-b4f1-32defc567300
+  apiGroup: rbac.authorization.k8s.io
+roleRef:
+  kind: ClusterRole
+  name: admin
+  apiGroup: rbac.authorization.k8s.io
+---
