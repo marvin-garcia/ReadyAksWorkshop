@@ -3,11 +3,22 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace AspNetCoreApp.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("[controller]")]
     [ApiController]
+
     public class MathController : ControllerBase
     {
         private int _secondsInterval = 5;
+
+        [HttpGet("operations")]
+        public string[] GetOperations()
+        {
+            return new string[]
+            {
+                "add", "substract", "multiply", "power",
+
+            };
+        }
 
         [HttpGet("add/{a}/{b}")]
         public long Add(long a, long b)
