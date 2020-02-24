@@ -3,6 +3,7 @@
 NAMESPACE='app1'
 INGRESS_IP='10.0.0.24'
 
+kubectl apply -f ./environment-config/helm/helm-rbac-config.yaml
 kubectl apply -f ./environment-config/monitoring/prometheus-configmap.yaml
 kubectl apply -f ./environment-config/namespace/app-namespace.yaml
 kubectl apply -f ./environment-config/RoleBindings/roles.yaml
