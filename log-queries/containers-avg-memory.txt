@@ -1,0 +1,35 @@
+let endDateTime = now();
+let startDateTime = ago(1h);
+let trendBinSize = 1m;
+let capacityCounterName = 'memoryLimitBytes';
+let usageCounterName = 'memoryRssBytes';
+let clusterName = '<your-cluster-name>';
+let controllerName = '<your-controller-name>';
+KubePodInventory
+| where TimeGenerated < endDateTime
+| where TimeGenerated >= startDateTime
+| where ClusterName == clusterName
+| where ControllerName == controllerName
+| extend InstanceName = strcat(ClusterId, '/', ContainerName),
+         ContainerName = strcat(controllerName, '/', tostring(split(ContainerName, '/')[1]))
+| distinct Computer, InstanceName, ContainerName
+| join hint.strategy=shuffle (
+    Perf
+    | where TimeGenerated < endDateTime
+    | where TimeGenerated >= startDateTime
+    | where ObjectName == 'K8SContainer'
+    | where CounterName == capacityCounterName
+    | summarize LimitValue = max(CounterValue) by Computer, InstanceName, bin(TimeGenerated, trendBinSize)
+    | project Computer, InstanceName, LimitStartTime = TimeGenerated, LimitEndTime = TimeGenerated + trendBinSize, LimitValue
+) on Computer, InstanceName
+| join kind=inner hint.strategy=shuffle (
+    Perf
+    | where TimeGenerated < endDateTime + trendBinSize
+    | where TimeGenerated >= startDateTime - trendBinSize
+    | where ObjectName == 'K8SContainer'
+    | where CounterName == usageCounterName
+    | project Computer, InstanceName, UsageValue = CounterValue, TimeGenerated
+) on Computer, InstanceName
+| where TimeGenerated >= LimitStartTime and TimeGenerated < LimitEndTime
+| project Computer, ContainerName, TimeGenerated, UsagePercent = UsageValue * 100.0 / LimitValue
+| summarize AggregatedValue = avg(UsagePercent) by bin(TimeGenerated, trendBinSize) , ContainerName
