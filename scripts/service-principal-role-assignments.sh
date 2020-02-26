@@ -1,6 +1,6 @@
 #!/bin/bash
 
-source ./parameters.sh
+source ./scripts/parameters.sh
 
 VNET_ID=`az network vnet show --resource-group $RESOURCE_GROUP --name $VNET_NAME --query id -o tsv`
 

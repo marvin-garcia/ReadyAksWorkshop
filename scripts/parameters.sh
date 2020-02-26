@@ -26,7 +26,7 @@ NODEPOOL_NAME='pool1'
 NODE_COUNT=2
 NODE_SIZE='Standard_DS2_v2'
 VM_SET_TYPE='VirtualMachineScaleSets'
-WORKSPACE_ID=''
+WORKSPACE_ID='/subscriptions/subscription-id/resourceGroups/resource-grou-name/providers/Microsoft.OperationalInsights/workspaces/workspace-name'
 CLUSTER_ZONES=1
 
 APP_GW_NAME='aks-waf_v2'

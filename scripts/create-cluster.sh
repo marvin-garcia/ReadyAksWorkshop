@@ -1,6 +1,6 @@
 #!/bin/bash
 
-source ./parameters.sh
+source ./scripts/parameters.sh
 
 SUBNET_ID=$(az network vnet subnet show --resource-group $RESOURCE_GROUP --vnet-name $VNET_NAME --name $AKS_SUBNET_NAME --query id -o tsv)
 

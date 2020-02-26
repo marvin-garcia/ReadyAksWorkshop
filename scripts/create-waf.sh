@@ -3,7 +3,6 @@
 # More info on how to configure an App Gateway to only work with private IP here
 # https://docs.microsoft.com/en-us/azure/application-gateway/application-gateway-faq
 
-clear
 source ./scripts/parameters.sh
 
 az network public-ip create \
