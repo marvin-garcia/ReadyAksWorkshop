@@ -73,8 +73,9 @@ spec:
           securityContext:
             readOnlyRootFilesystem: true
           volumeMounts:
-          - name: {{ .Values.sigsci.controller.volumeMount.name }}
-            mountPath: {{ .Values.sigsci.controller.volumeMount.mountPath }}
+{{- if .Values.sigsci.controller.volumeMounts }}
+{{ toYaml .Values.sigsci.controller.volumeMounts | indent 12}}
+{{- end }}
         - name: {{ template "nginx-ingress.name" . }}-{{ .Values.controller.name }}
           image: "{{ .Values.controller.image.repository }}:{{ .Values.controller.image.tag }}"
           imagePullPolicy: "{{ .Values.controller.image.pullPolicy }}"

@@ -3,6 +3,12 @@ controller:
   image: signalsciences/nginx-ingress-controller
   tag: 0.24.1
   pullPolicy: IfNotPresent
+  extraVolumeMounts:
+  - name: sigsci-tmp
+    mountPath: /sigsci/tmp
+  extraVolumes:
+  - name: sigsci-tmp
+    emptyDir: {}
   ingressClass: __replace__
   replicaCount: 2
   autoscaling:
@@ -22,8 +28,8 @@ sigsci:
       repository: signalsciences/sigsci-agent
       tag: latest
       pullPolicy: Always
-    volumeMount:
-      name: sigsci-tmp
+    volumeMounts:
+    - name: sigsci-tmp
       mountPath: /sigsci/tmp
     accessKeyId: accessKeyId
     secretAccessKey: secretAccessKey
