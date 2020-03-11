@@ -20,15 +20,15 @@ First thing you will need is a service principal to assign to the cluster. If yo
 
 ## Register AAD Apps to use with the cluster
 
-Since the cluster will be integrated with Azure Active Directory, you need to register a client and server apps to authenticate users. Follow this ![https://docs.microsoft.com/en-us/azure/aks/azure-ad-integration](document) to complete the steps.
+Since the cluster will be integrated with Azure Active Directory, you need to register a client and server apps to authenticate users. Follow this [document](https://docs.microsoft.com/en-us/azure/aks/azure-ad-integration) to complete the steps.
 
 ## Fill in environment parameters
 
-In order to use the scripts in this repo, you need to fill in the parameters in the file ![scripts/parameters.sh](parameters.sh). Once you have filled all variables, you may proceed with the documentation.
+In order to use the scripts in this repo, you need to fill in the parameters in the file [parameters.sh](scripts/parameters.sh). Once you have filled all variables, you may proceed with the documentation.
 
 ## Create virtual network
 
-Next you will need an existing virtual network and a subnet to deploy the cluster and the WAF. Next, you'll need to grant contributor role access to the service principal to manage the subnet. If you already have a virtual network and a subnet, you may skip this step and, but make sure ![scripts/parameters.sh](parameters.sh) file reflects your current configuration. Run the following commands:
+Next you will need an existing virtual network and a subnet to deploy the cluster and the WAF. Next, you'll need to grant contributor role access to the service principal to manage the subnet. If you already have a virtual network and a subnet, you may skip this step and, but make sure [parameters.sh](scripts/parameters.sh) file reflects your current configuration. Run the following commands:
 
 ```
 bash ./scripts/create-vnet.sh
@@ -43,7 +43,7 @@ Now you will create the AKS cluster. Run the folloeing command:
 
 ## Create Web Application Firewall
 
-Once the cluster has been created, you can create the firewall. Azure App Firewall v2 runs nginx in the backend and therefore is much faster than its predecesor. Currently it requires a public IP in the initial configuration for it to be deployed successfully, so in order to use the private IP and block Internet access we have deployed a Network Security Group in the [scripts/create-vnet.sh]create-vnet.sh script. If you already had a virtual network and skipped the vnet script, you may have to manually add a subnet for the WAF and create the NSG to limit Internet access. For more information, open the file [scripts/create-vnet.sh]create-vnet.sh and go to the documentation link for more details.
+Once the cluster has been created, you can create the firewall. Azure App Firewall v2 runs nginx in the backend and therefore is much faster than its predecesor. Currently it requires a public IP in the initial configuration for it to be deployed successfully, so in order to use the private IP and block Internet access we have deployed a Network Security Group in the [create-vnet.sh](scripts/create-vnet.sh) script. If you already had a virtual network and skipped the vnet script, you may have to manually add a subnet for the WAF and create the NSG to limit Internet access. For more information, open the file [create-vnet.sh](scripts/create-vnet.sh) and go to the documentation link for more details.
 
 To create the WAF, run the following command:
 
