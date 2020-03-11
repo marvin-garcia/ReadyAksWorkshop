@@ -1,16 +1,16 @@
 # ReadyAksWorkshop
 
-This repo contains relevant script and config files to deploy Azure Kubernetes Service. This configuration has the following details:
-- It enables RBAC
-- It uses Azure AD authentication to manage the cluster
-- It uses kubenet network configuration
-- It requires a log analytics workspace
-- It creates a namespace for the application team to manage
-- It configures roles and role bindings in the cluster
-- It installs Helm
-- It install Nginx in the cluster and creates an ingress controller with a private IP address
-- It creates a Web Application Firewall to use in front of the internal ingress controller for detection and monitoring purposes
-- It prevents access from the Internet to the WAF so it can only be accessed internally. For testing purposes, the Network Security Group can be disassociated to the WAF subnet and public access will be back enabled
+This repo contains relevant script and config files to deploy Azure Kubernetes Service. The scripts in this repo allow you to do the following:
+- Create an AKS cluster with the following specs:
+    - RBAC enabled
+    -Azure AD integrated
+    - kubenet network configuration
+    - Connected to a log analytics workspace
+- Create a namespace for an application team to manage
+- Configure roles and role bindings in the cluster
+- Install Helm
+- Install Nginx in the cluster and create an ingress controller with a private IP address
+- Create a Web Application Firewall to use in front of the internal ingress controller for detection and monitoring purposes. Public access from the Internet to the WAF is blocked so it can only be accessed internally. For testing purposes, the Network Security Group can be disassociated to the WAF subnet and public access will be back enabled
 
 ## Create service principal
 
@@ -20,15 +20,15 @@ First thing you will need is a service principal to assign to the cluster. If yo
 
 ## Register AAD Apps to use with the cluster
 
-Since the cluster will be integrated with Azure Active Directory, you need to register a client and server apps to authenticate users. Follow this [https://docs.microsoft.com/en-us/azure/aks/azure-ad-integration]document to complete the steps.
+Since the cluster will be integrated with Azure Active Directory, you need to register a client and server apps to authenticate users. Follow this ![https://docs.microsoft.com/en-us/azure/aks/azure-ad-integration](document) to complete the steps.
 
 ## Fill in environment parameters
 
-In order to use the scripts in this repo, you need to fill in the parameters in the file [scripts/parameters.sh]parameters.sh. Once you have filled all variables, you may proceed with the documentation.
+In order to use the scripts in this repo, you need to fill in the parameters in the file ![scripts/parameters.sh](parameters.sh). Once you have filled all variables, you may proceed with the documentation.
 
 ## Create virtual network
 
-Next you will need an existing virtual network and a subnet to deploy the cluster and the WAF. Next, you'll need to grant contributor role access to the service principal to manage the subnet. If you already have a virtual network and a subnet, you may skip this step and, but make sure [scripts/parameters.sh]parameters.sh file reflects your current configuration. Run the following commands:
+Next you will need an existing virtual network and a subnet to deploy the cluster and the WAF. Next, you'll need to grant contributor role access to the service principal to manage the subnet. If you already have a virtual network and a subnet, you may skip this step and, but make sure ![scripts/parameters.sh](parameters.sh) file reflects your current configuration. Run the following commands:
 
 ```
 bash ./scripts/create-vnet.sh
