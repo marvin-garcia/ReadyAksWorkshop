@@ -6,6 +6,7 @@ AKS_SUBNET_NAME='aks-subnet'
 AKS_SUBNET_RANGE='10.0.240.0/27'
 APP_GW_SUBNET_NAME='waf-subnet'
 APP_GW_SUBNET_RANGE='10.0.1.0/28'
+INGRESS_IP='10.0.0.23'
 
 LOCATION=''
 RESOURCE_GROUP=''
@@ -28,6 +29,7 @@ NODE_SIZE='Standard_DS2_v2'
 VM_SET_TYPE='VirtualMachineScaleSets'
 WORKSPACE_ID='/subscriptions/subscription-id/resourceGroups/resource-grou-name/providers/Microsoft.OperationalInsights/workspaces/workspace-name'
 CLUSTER_ZONES=1
+NAMESPACE='app2'
 
 APP_GW_NAME='aks-waf_v2'
 APP_GW_MIN_CAPACITY=2
@@ -46,3 +48,6 @@ SERVICE_PRINCIPAL_NAME=''
 SERVICE_PRINCIPAL_ID=''
 SERVICE_PRINCIPAL_SECRET=''
 TENANT_ID=''
+
+SIGSCI_ACCESS_KEY='e14500e0-5ecd-47e0-b1ac-c0e628450807'
+SIGSCY_SECRET_KEY='6z2EZ7iSy53Vhe4--GMnkfvtP6xQk35ZgWohVkTLT0s'
