@@ -64,12 +64,12 @@ spec:
           - name: SIGSCI_ACCESSKEYID
             valueFrom:
               secretKeyRef:
-                name: {{ .Values.sigsci.controller.accessKeyId }}
+                name: {{ .Values.sigsci.secret.name }}
                 key: accesskeyid
           - name: SIGSCI_SECRETACCESSKEY
             valueFrom:
               secretKeyRef:
-                name: {{ .Values.sigsci.controller.secretAccessKey }}
+                name: {{ .Values.sigsci.secret.name }}
                 key: secretaccesskey
           securityContext:
             readOnlyRootFilesystem: true

@@ -1,4 +1,5 @@
 controller:
+  deploySigSci: true
   extraVolumeMounts:
   - name: sigsci-tmp
     mountPath: /sigsci/tmp
@@ -22,8 +23,8 @@ sigsci:
     volumeMounts:
     - name: sigsci-tmp
       mountPath: /sigsci/tmp
-    accessKeyId: accessKeyId
-    secretAccessKey: secretAccessKey
+    accessKeyId: accesskeyid
+    secretAccessKey: secretaccesskey
   configMap:
     name: nginx-configuration
   secret:
