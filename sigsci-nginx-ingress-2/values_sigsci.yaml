@@ -1,27 +1,17 @@
 controller:
-  kind: Deployment
-  name: __replace__
-  image: __replace__  # signalsciences/nginx-ingress-controller
-  tag: __replace__ # 0.24.1
-  pullPolicy: IfNotPresent
   extraVolumeMounts:
   - name: sigsci-tmp
     mountPath: /sigsci/tmp
   extraVolumes:
   - name: sigsci-tmp
     emptyDir: {}
-  ingressClass: __replace__
-  replicaCount: 2
-  autoscaling:
-    enabled: true
-    minReplicas: 2
-    maxReplicas: 11
-    targetCPUUtilizationPercentage: 60
-    targetMemoryUtilizationPercentage: 60
   service:
-    loadBalancerIP: __replace__
+    omitClusterIP: true
     annotations:
       service.beta.kubernetes.io/azure-load-balancer-internal: "true"
+defaultBackend:
+  service:
+    omitClusterIP: true
 sigsci:
   controller:
     name: sigsci-agent
