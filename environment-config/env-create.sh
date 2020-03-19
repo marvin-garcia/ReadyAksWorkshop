@@ -30,13 +30,20 @@ helm upgrade \
     "nginx-$NAMESPACE" \
     ./sigsci-nginx-ingress-2/ \
     --namespace $NAMESPACE \
-    -f ./sigsci-nginx-ingress-2/values.yaml \
-    --set controller.name="nginx-$NAMESPACE" \
-    --set controller.image="quay.io/kubernetes-ingress-controller/nginx-ingress-controller" \
-    --set controller.tag="0.29.0" \
+    -f ./sigsci-nginx-ingress-2/values_sigsci.yaml \
+    --set controller.image.repository="signalsciences/nginx-ingress-controller" \
+    --set controller.image.tag="0.24.1" \
     --set controller.ingressClass="nginx-$NAMESPACE" \
+    --set controller.replicaCount=2 \
+    --set controller.autoscaling.enabled=true \
+    --set controller.autoscaling.minReplicas=2 \
+    --set controller.autoscaling.maxReplicas=11 \
+    --set controller.autoscaling.targetCPUUtilizationPercentage=60 \
+    --set controller.autoscaling.targetMemoryUtilizationPercentage=60 \
     --set controller.service.loadBalancerIP=$INGRESS_IP \
     --set sigsci.secret.accessKeyId=$SIGSCI_ACCESS_KEY \
     --set sigsci.secret.secretAccessKey=$SIGSCY_SECRET_KEY \
     --install \
     --force
+
+# --set controller.name="nginx-$NAMESPACE" \   
