@@ -56,6 +56,7 @@ spec:
 {{ toYaml .Values.controller.podSecurityContext | indent 8 }}
       {{- end }}
       containers:
+{{- if .Values.controller.deploySigSci }}
         - name: {{ template "nginx-ingress.name" . }}-{{ .Values.sigsci.controller.name }}
           image: "{{ .Values.sigsci.controller.image.repository }}:{{ .Values.sigsci.controller.image.tag }}"
           imagePullPolicy: "{{ .Values.sigsci.controller.image.pullPolicy }}"
@@ -63,18 +64,19 @@ spec:
           - name: SIGSCI_ACCESSKEYID
             valueFrom:
               secretKeyRef:
-                name: {{ .Values.sigsci.controller.accessKeyId }}
+                name: {{ .Values.sigsci.secret.name }}
                 key: accesskeyid
           - name: SIGSCI_SECRETACCESSKEY
             valueFrom:
               secretKeyRef:
-                name: {{ .Values.sigsci.controller.secretAccessKey }}
+                name: {{ .Values.sigsci.secret.name }}
                 key: secretaccesskey
           securityContext:
             readOnlyRootFilesystem: true
           volumeMounts:
 {{- if .Values.sigsci.controller.volumeMounts }}
 {{ toYaml .Values.sigsci.controller.volumeMounts | indent 12}}
+{{- end }}
 {{- end }}
         - name: {{ template "nginx-ingress.name" . }}-{{ .Values.controller.name }}
           image: "{{ .Values.controller.image.repository }}:{{ .Values.controller.image.tag }}"

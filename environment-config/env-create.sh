@@ -28,9 +28,9 @@ source ./scripts/parameters.sh
 
 helm upgrade \
     "nginx-$NAMESPACE" \
-    ./sigsci-nginx-ingress-2/ \
+    ./sigsci-nginx-ingress/ \
     --namespace $NAMESPACE \
-    -f ./sigsci-nginx-ingress-2/values_sigsci.yaml \
+    -f ./sigsci-nginx-ingress/values_sigsci.yaml \
     --set controller.image.repository="signalsciences/nginx-ingress-controller" \
     --set controller.image.tag="0.24.1" \
     --set controller.ingressClass="nginx-$NAMESPACE" \
