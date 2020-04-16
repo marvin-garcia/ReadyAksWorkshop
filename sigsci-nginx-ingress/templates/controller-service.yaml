@@ -1,0 +1,27 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Release.Name }}-controller
+  namespace: {{ .Release.Namespace }}
+  annotations:
+    service.beta.kubernetes.io/azure-load-balancer-internal: "true"
+  labels:
+    app: {{ .Release.Name }}
+    component: "{{ .Values.controller.name }}"
+    app.kubernetes.io/name: {{ .Release.Name }}
+    app.kubernetes.io/part-of: {{ .Release.Name }}
+spec:
+  type: "{{ .Values.controller.service.type }}"
+  loadBalancerIP: "{{ .Values.controller.service.loadBalancerIP }}"
+  ports:
+    - name: http
+      port: 80
+      protocol: TCP
+      targetPort: http
+    - name: https
+      port: 443
+      protocol: TCP
+      targetPort: https
+  selector:
+    app: {{ .Release.Name }}
+    component: "{{ .Values.controller.name }}"

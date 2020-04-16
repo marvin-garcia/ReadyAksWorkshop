@@ -1,10 +1,20 @@
 controller:
   name: controller
   ingressClass: nginx
+  replicaCount: 1
+  image:
+    repository: signalsciences/sigsci-nginx-ingress-controller
+    tag: 0.26.1
   service:
     omitClusterIP: true
     annotations:
       service.beta.kubernetes.io/azure-load-balancer-internal: "true"
+  autoscaling:
+    enabled: true
+    minReplicas: 2
+    maxReplicas: 10
+    targetCPUUtilizationPercentage: 60
+    targetMemoryUtilizationPercentage: 60
 defaultBackend:
   service:
     omitClusterIP: true

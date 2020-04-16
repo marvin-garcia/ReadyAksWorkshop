@@ -1,13 +1,17 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: nginx-ingress-controller
+  name: {{ .Release.Name }}-controller
   namespace: {{ .Release.Namespace }}
   labels:
+    app: {{ .Release.Name }}
+    component: {{ .Values.controller.name }}
     app.kubernetes.io/name: {{ .Release.Name }}
     app.kubernetes.io/part-of: {{ .Release.Name }}
 spec:
-  replicas: 1
+{{- if not .Values.controller.autoscaling.enabled }}
+  replicas: {{ .Values.controller.replicaCount }}
+{{- end }}
   selector:
     matchLabels:
       app.kubernetes.io/name: {{ .Release.Name }}
@@ -15,6 +19,7 @@ spec:
   template:
     metadata:
       labels:
+        app: {{ .Release.Name }}
         app.kubernetes.io/name: {{ .Release.Name }}
         app.kubernetes.io/part-of: {{ .Release.Name }}
       annotations:
@@ -24,13 +29,13 @@ spec:
       serviceAccountName: {{ .Release.Name }}-serviceaccount
       containers:
         - name: nginx-ingress-controller
-          image: signalsciences/sigsci-nginx-ingress-controller:0.26.1
+          image: "{{ .Values.controller.image.repository }}:{{ .Values.controller.image.tag }}"
           args:
             - /nginx-ingress-controller
             - --configmap=$(POD_NAMESPACE)/nginx-configuration
             - --tcp-services-configmap=$(POD_NAMESPACE)/tcp-services
             - --udp-services-configmap=$(POD_NAMESPACE)/udp-services
-            - --publish-service=$(POD_NAMESPACE)/nginx-ingress-controller
+            - --publish-service=$(POD_NAMESPACE)/{{ .Release.Name }}-controller
             - --annotations-prefix=nginx.ingress.kubernetes.io
           securityContext:
             allowPrivilegeEscalation: true
@@ -78,13 +83,19 @@ spec:
             successThreshold: 1
             timeoutSeconds: 10
         - name: sigsci-agent
-          image: signalsciences/sigsci-agent:latest
-          imagePullPolicy: IfNotPresent
+          image: "{{ .Values.sigsci.image.repository }}:{{ .Values.sigsci.image.tag }}"
+          imagePullPolicy: {{ .Values.sigsci.image.pullPolicy }}
           env:
           - name: SIGSCI_ACCESSKEYID
-            value: e14500e0-5ecd-47e0-b1ac-c0e628450807
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Values.sigsci.secret.name }}
+                key: accesskeyid
           - name: SIGSCI_SECRETACCESSKEY
-            value: 6z2EZ7iSy53Vhe4--GMnkfvtP6xQk35ZgWohVkTLT0s
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Values.sigsci.secret.name }}
+                key: secretaccesskey
           securityContext:
             # The sigsci-agent container should run with its root filesystem read only
             readOnlyRootFilesystem: true
