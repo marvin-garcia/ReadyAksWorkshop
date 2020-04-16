@@ -1,7 +1,7 @@
 #!/bin/bash
 # More info on how to install Helm at https://helm.sh/docs/intro/install/
 
-source ./scripts/parameters_marv.sh
+source ./scripts/parameters.sh
 echo "namespace $NAMESPACE"
 
 CREATE_NAMESPACE=false
