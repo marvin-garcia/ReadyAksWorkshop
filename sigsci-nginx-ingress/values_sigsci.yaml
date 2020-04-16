@@ -1,11 +1,6 @@
 controller:
-  deploySigSci: true
-  extraVolumeMounts:
-  - name: sigsci-tmp
-    mountPath: /sigsci/tmp
-  extraVolumes:
-  - name: sigsci-tmp
-    emptyDir: {}
+  name: controller
+  ingressClass: nginx
   service:
     omitClusterIP: true
     annotations:
@@ -14,19 +9,12 @@ defaultBackend:
   service:
     omitClusterIP: true
 sigsci:
-  controller:
-    name: sigsci-agent
-    image:
-      repository: signalsciences/sigsci-agent
-      tag: latest
-      pullPolicy: Always
-    volumeMounts:
-    - name: sigsci-tmp
-      mountPath: /sigsci/tmp
-    accessKeyId: accesskeyid
-    secretAccessKey: secretaccesskey
-  configMap:
-    name: nginx-configuration
+  image:
+    repository: signalsciences/sigsci-agent
+    tag: latest
+    pullPolicy: Always
+  accessKeyId: accesskeyid
+  secretAccessKey: secretaccesskey
   secret:
     name: sigsci-secret
     accessKeyId: __replace__

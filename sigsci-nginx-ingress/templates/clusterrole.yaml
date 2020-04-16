@@ -1,13 +1,12 @@
-{{- if .Values.rbac.create -}}
-apiVersion: rbac.authorization.k8s.io/v1
+apiVersion: rbac.authorization.k8s.io/v1beta1
 kind: ClusterRole
 metadata:
+  name: {{ .Release.Name }}-clusterrole
+  namespace: {{ .Release.Namespace }}
   labels:
-    app: {{ template "nginx-ingress.name" . }}
-    chart: {{ template "nginx-ingress.chart" . }}
-    heritage: {{ .Release.Service }}
-    release: {{ .Release.Name }}
-  name: {{ template "nginx-ingress.fullname" . }}
+    app: {{ .Release.Name }}
+    app.kubernetes.io/name: {{ .Release.Name }}
+    app.kubernetes.io/part-of: {{ .Release.Name }}
 rules:
   - apiGroups:
       - ""
@@ -20,16 +19,6 @@ rules:
     verbs:
       - list
       - watch
-{{- if and .Values.controller.scope.enabled .Values.controller.scope.namespace }}
-  - apiGroups:
-      - ""
-    resources:
-      - namespaces
-    resourceNames:
-      - "{{ .Values.controller.scope.namespace }}"
-    verbs:
-      - get
-{{- end }}
   - apiGroups:
       - ""
     resources:
@@ -43,11 +32,17 @@ rules:
     verbs:
       - get
       - list
-      - update
       - watch
   - apiGroups:
-      - extensions
-      - "networking.k8s.io" # k8s 1.14+
+      - "networking.k8s.io"
+    resources:
+      - ingresses
+    verbs:
+      - get
+      - list
+      - watch
+  - apiGroups:
+      - "extensions"
     resources:
       - ingresses
     verbs:
@@ -62,10 +57,8 @@ rules:
       - create
       - patch
   - apiGroups:
-      - extensions
-      - "networking.k8s.io" # k8s 1.14+
+      - "extensions"
     resources:
       - ingresses/status
     verbs:
       - update
-{{- end -}}

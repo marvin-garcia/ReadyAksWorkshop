@@ -1,0 +1,108 @@
+# apiVersion: apps/v1
+# kind: Deployment
+# metadata:
+#   name: {{ .Release.Name }}-controller
+#   namespace: {{ .Release.Namespace }}
+#   labels:
+#     app: {{ .Release.Name }}
+#     component: "{{ .Values.controller.name }}"
+#     app.kubernetes.io/name: {{ .Release.Name }}
+#     app.kubernetes.io/part-of: {{ .Release.Name }}
+# spec:
+# {{- if not .Values.controller.autoscaling.enabled }}
+#   replicas: {{ .Values.controller.replicaCount }}
+# {{- end }}
+#   selector:
+#     matchLabels:
+#       app: {{ .Release.Name }}
+#       app.kubernetes.io/name: {{ .Release.Name }}
+#       app.kubernetes.io/part-of: {{ .Release.Name }}
+#   template:
+#     metadata:
+#       labels:
+#         app: {{ .Release.Name }}
+#         component: "{{ .Values.controller.name }}"
+#         app.kubernetes.io/name: {{ .Release.Name }}
+#         app.kubernetes.io/part-of: {{ .Release.Name }}
+#       annotations:
+#         prometheus.io/port: "10254"
+#         prometheus.io/scrape: "true"
+#     spec:
+#       serviceAccountName: {{ .Release.Name }}-serviceaccount
+#       containers:
+#         - name: {{ .Release.Name }}-{{ .Values.controller.name }}
+#           image: "{{ .Values.controller.image.repository }}:{{ .Values.controller.image.tag }}"
+#           args:
+#             - /{{ .Release.Name }}-controller
+#             - --configmap=$(POD_NAMESPACE)/nginx-configuration
+#             - --tcp-services-configmap=$(POD_NAMESPACE)/tcp-services
+#             - --udp-services-configmap=$(POD_NAMESPACE)/udp-services
+#             - --publish-service=$(POD_NAMESPACE)/{{ .Release.Name }}-controller
+#             - --annotations-prefix=nginx.ingress.kubernetes.io
+#           securityContext:
+#             allowPrivilegeEscalation: true
+#             capabilities:
+#               drop:
+#                 - ALL
+#               add:
+#                 - NET_BIND_SERVICE
+#             # www-data -> 33
+#             runAsUser: 33
+#           env:
+#             - name: POD_NAME
+#               valueFrom:
+#                 fieldRef:
+#                   fieldPath: metadata.name
+#             - name: POD_NAMESPACE
+#               valueFrom:
+#                 fieldRef:
+#                   fieldPath: metadata.namespace
+#           volumeMounts:
+#             - name: sigsci-tmp
+#               mountPath: /sigsci/tmp
+#           ports:
+#             - name: http
+#               containerPort: 80
+#             - name: https
+#               containerPort: 443
+#           livenessProbe:
+#             failureThreshold: 3
+#             httpGet:
+#               path: /healthz
+#               port: 10254
+#               scheme: HTTP
+#             initialDelaySeconds: 10
+#             periodSeconds: 10
+#             successThreshold: 1
+#             timeoutSeconds: 10
+#           readinessProbe:
+#             failureThreshold: 3
+#             httpGet:
+#               path: /healthz
+#               port: 10254
+#               scheme: HTTP
+#             periodSeconds: 10
+#             successThreshold: 1
+#             timeoutSeconds: 10
+#         - name: sigsci-agent
+#           image: "{{ .Values.sigsci.image.repository }}:{{ .Values.sigsci.image.tag }}"
+#           imagePullPolicy: {{ .Values.sigsci.image.pullPolicy }}
+#           env:
+#           - name: SIGSCI_ACCESSKEYID
+#             valueFrom:
+#               secretKeyRef:
+#                 name: {{ .Values.sigsci.secret.name }}
+#                 key: accesskeyid
+#           - name: SIGSCI_SECRETACCESSKEY
+#             valueFrom:
+#               secretKeyRef:
+#                 name: {{ .Values.sigsci.secret.name }}
+#                 key: secretaccesskey
+#           securityContext:
+#             readOnlyRootFilesystem: true
+#           volumeMounts:
+#           - name: sigsci-tmp
+#             mountPath: /sigsci/tmp
+#       volumes:
+#       - name: sigsci-tmp
+#         emptyDir: {}
