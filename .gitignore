@@ -286,4 +286,4 @@ __pycache__/
 *.btm.cs
 *.odx.cs
 *.xsd.cs
-scripts/parameters.sh.marv
+scripts/parameters_marv.sh
