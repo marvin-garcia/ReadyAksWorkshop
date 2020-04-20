@@ -1,0 +1,75 @@
+replicaCount: 1
+
+image:
+  repository: marvingarcia/mathwebapp
+  tag: latest
+  pullPolicy: Always
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+serviceAccount:
+  create: true
+  name: mathweb-sa
+  annotations: {}
+
+podSecurityContext: {}
+  # fsGroup: 2000
+
+securityContext: {}
+  # capabilities:
+  #   drop:
+  #   - ALL
+  # readOnlyRootFilesystem: true
+  # runAsNonRoot: true
+  # runAsUser: 1000
+
+ports:
+- name: http
+  containerPort: 80
+  protocol: TCP
+
+livenessProbe:
+  port: http
+  path: /math/operations
+readinessProbe:
+  port: http
+  path: /math/operations
+
+service:
+  type: ClusterIP
+  port: 80
+
+ingress:
+  enabled: true
+  annotations: {
+    kubernetes.io/ingress.class: __replace__,
+    nginx.ingress.kubernetes.io/rewrite-target: /math,
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+  }
+  paths:
+  - /math
+
+tls: []
+  #  - secretName: chart-example-tls
+  #    hosts:
+  #      - chart-example.local
+
+resources: {}
+  # We usually recommend not to specify default resources and to leave this as a conscious
+  # choice for the user. This also increases chances charts run on environments with little
+  # resources, such as Minikube. If you do want to specify resources, uncomment the following
+  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  # limits:
+  #   cpu: 100m
+  #   memory: 128Mi
+  # requests:
+  #   cpu: 100m
+  #   memory: 128Mi
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}

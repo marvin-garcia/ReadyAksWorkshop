@@ -1,0 +1,10 @@
+
+################
+### MATH WEB ###
+################
+
+1. Get the application URL by running these commands:
+
+kubectl get svc <your-nginx-ingress-service>
+
+Navigate to http{{ if $.Values.ingress.tls }}s{{ end }}://<your-nginx-ingress-service-ip>/math/operations for more details

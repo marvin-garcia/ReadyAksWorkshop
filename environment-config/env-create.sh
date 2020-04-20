@@ -2,10 +2,9 @@
 # More info on how to install Helm at https://helm.sh/docs/intro/install/
 
 source ./scripts/parameters.sh
-echo "namespace $NAMESPACE"
 
 CREATE_NAMESPACE=false
-INGRESS_INSTALLATION_TYPE='sigsci' # Possible options are 'stable' and 'sigsci'
+INGRESS_INSTALLATION_TYPE='sigsci' # Possible options are 'stable', 'sigsci' or 'none'
 INSTALL_SAMPLE_APPS=false
 
 if [ $CREATE_NAMESPACE == true ]
@@ -38,7 +37,8 @@ then
         --set controller.service.loadBalancerIP=$INGRESS_IP \
         --install \
         --force
-else
+elif [ $INGRESS_INSTALLATION_TYPE == 'sigsci' ]
+then
     echo "Installing custom chart for SigSci nginx ingress in namesapce $NAMESPACE"
     
     helm upgrade \
@@ -52,13 +52,30 @@ else
         --set sigsci.secret.secretAccessKey=$SIGSCY_SECRET_KEY \
         --install \
         --force
+else
+    echo 'Skipping ingress controller installation'
 fi
 
 if [ $INSTALL_SAMPLE_APPS == true ]
 then
     echo "Installing sample apps mathwebapp and nginxweb"
 
-    kubectl apply -f ./sampleapps/mathwebapp.yaml
-    kubectl apply -f ./sampleapps/nginxweb.yaml
+    helm upgrade \
+        "mathweb" \
+        ./sampleapps/mathweb/ \
+        --namespace $NAMESPACE \
+        -f ./sampleapps/mathweb/values.yaml \
+        --set ingress.annotations."kubernetes\.io/ingress\.class"="nginx-$NAMESPACE" \
+        --install \
+        --force
+    
+    helm upgrade \
+        "nginxweb" \
+        ./sampleapps/nginxweb/ \
+        --namespace $NAMESPACE \
+        -f ./sampleapps/nginxweb/values.yaml \
+        --set ingress.annotations."kubernetes\.io/ingress\.class"="nginx-$NAMESPACE" \
+        --install \
+        --force
 fi
 
