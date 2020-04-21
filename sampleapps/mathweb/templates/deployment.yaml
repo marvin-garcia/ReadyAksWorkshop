@@ -43,6 +43,11 @@ spec:
               port: {{ .Values.readinessProbe.port }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
+          env:
+            {{- range .Values.envvars }}
+            - name: {{ .name }}
+              value: {{ .value }}
+            {{- end }}
         {{- if .Values.sigsci.enabled }}
         - name: sigsci-agent
           image: "{{ .Values.sigsci.image.repository }}:{{ .Values.sigsci.image.tag }}"

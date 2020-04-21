@@ -33,9 +33,14 @@ ports:
 livenessProbe:
   port: http
   path: /math/operations
+
 readinessProbe:
   port: http
   path: /math/operations
+
+envvars:
+- name: SecondsInterval
+  value: 0
 
 service:
   type: ClusterIP
