@@ -1,5 +1,7 @@
-﻿using System.Threading;
+﻿using System;
+using System.Threading;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 
 namespace AspNetCoreApp.Controllers
 {
@@ -8,7 +10,12 @@ namespace AspNetCoreApp.Controllers
 
     public class MathController : ControllerBase
     {
-        private int _secondsInterval = 5;
+        private int SecondsInterval { get; set; }
+
+        public MathController(IConfiguration configuration)
+        {
+            this.SecondsInterval = Convert.ToInt32(configuration["SecondsInterval"]);
+        }
 
         [HttpGet("operations")]
         public string[] GetOperations()
@@ -16,7 +23,6 @@ namespace AspNetCoreApp.Controllers
             return new string[]
             {
                 "add", "substract", "multiply", "power",
-
             };
         }
 
@@ -26,7 +32,9 @@ namespace AspNetCoreApp.Controllers
             for (int i = 0; i < b; i++)
             {
                 a++;
-                Thread.Sleep(_secondsInterval * 1000);
+                
+                if (SecondsInterval > 0)
+                    Thread.Sleep(SecondsInterval * 1000);
             }
 
             return a;
@@ -38,7 +46,9 @@ namespace AspNetCoreApp.Controllers
             for (int i = 0; i < b; i++)
             {
                 a--;
-                Thread.Sleep(_secondsInterval * 1000);
+
+                if (SecondsInterval > 0)
+                    Thread.Sleep(SecondsInterval * 1000);
             }
 
             return a;
@@ -51,7 +61,9 @@ namespace AspNetCoreApp.Controllers
             for (int i = 0; i < b; i++)
             {
                 result += a;
-                Thread.Sleep(_secondsInterval * 1000);
+
+                if (SecondsInterval > 0)
+                    Thread.Sleep(SecondsInterval * 1000);
             }
 
             return result;
@@ -64,7 +76,9 @@ namespace AspNetCoreApp.Controllers
             for (int i = 0; i < b - 1; i++)
             {
                 result *= a;
-                Thread.Sleep(_secondsInterval * 1000);
+
+                if (SecondsInterval > 0)
+                    Thread.Sleep(SecondsInterval * 1000);
             }
 
             return result;
