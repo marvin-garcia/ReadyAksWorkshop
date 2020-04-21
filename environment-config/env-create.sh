@@ -3,11 +3,12 @@
 
 source ./scripts/parameters.sh
 
-CREATE_NAMESPACE=false
-INGRESS_INSTALLATION_TYPE='sigsci' # Possible options are 'stable', 'sigsci' or 'none'
-INSTALL_SAMPLE_APPS=false
+echo -e "\n#### Environment Config Script ####\n"
 
-if [ $CREATE_NAMESPACE == true ]
+read -p "Do you want to create and configure a new namespace? [y/n] (Default=n): " CREATE_NAMESPACE
+CREATE_NAMESPACE=${CREATE_NAMESPACE:-n}
+
+if [ $CREATE_NAMESPACE == 'y' ]
 then
     echo "Creating namespace $NAMESPACE"
     
@@ -23,10 +24,26 @@ then
     helm repo update
 fi
 
-if [ $INGRESS_INSTALLATION_TYPE == 'stable' ]
+echo -e "\nNginx Ingress controller options:"
+echo -e "1- None"
+echo -e "2- Stable"
+echo -e "3- SigSci"
+echo -e ""
+
+read -p "Choose one of the options above [1-3] (Default=1)" INGRESS_INSTALLATION_TYPE
+INGRESS_INSTALLATION_TYPE=${INGRESS_INSTALLATION_TYPE:-1}
+
+if [ $INGRESS_INSTALLATION_TYPE == '1' ]
 then
-    echo "Installing Helm chart for stable nginx ingress in namesapce $NAMESPACE"
+    echo -e "\nSkipping ingress controller installation"
+elif [ $INGRESS_INSTALLATION_TYPE == '2' ]
+then
+    echo -e "\nInstalling 'stable' version of nginx ingress in namesapce $NAMESPACE"
     
+    helm delete \
+        "nginx-$NAMESPACE" \
+        --namespace $NAMESPACE > /dev/null 2>&1
+
     helm upgrade \
         "nginx-$NAMESPACE" \
         stable/nginx-ingress \
@@ -37,10 +54,14 @@ then
         --set controller.service.loadBalancerIP=$INGRESS_IP \
         --install \
         --force
-elif [ $INGRESS_INSTALLATION_TYPE == 'sigsci' ]
+elif [ $INGRESS_INSTALLATION_TYPE == '3' ]
 then
-    echo "Installing custom chart for SigSci nginx ingress in namesapce $NAMESPACE"
+    echo -e "\nInstalling 'SigSci' version of nginx ingress in namesapce $NAMESPACE"
     
+    helm delete \
+        "nginx-$NAMESPACE" \
+        --namespace $NAMESPACE > /dev/null 2>&1
+
     helm upgrade \
         "nginx-$NAMESPACE" \
         ./sigsci-nginx-ingress/ \
@@ -53,22 +74,58 @@ then
         --install \
         --force
 else
-    echo 'Skipping ingress controller installation'
+    echo -e "\nOption '$INGRESS_INSTALLATION_TYPE' is not recognized. Skipping ingress controller installation"
 fi
 
-if [ $INSTALL_SAMPLE_APPS == true ]
-then
-    echo "Installing sample apps mathwebapp and nginxweb"
+echo -e ""
+read -p "Do you want to install the sample app 'mathweb'? [y/n] (Default=n): " INSTALL_MATHWEB
+INSTALL_MATHWEB=${INSTALL_MATHWEB:-n}
 
-    helm upgrade \
-        "mathweb" \
-        ./sampleapps/mathweb/ \
-        --namespace $NAMESPACE \
-        -f ./sampleapps/mathweb/values.yaml \
-        --set ingress.annotations."kubernetes\.io/ingress\.class"="nginx-$NAMESPACE" \
-        --install \
-        --force
+if [ $INSTALL_MATHWEB == 'y' ]
+then
+    echo -e ""
+    read -p "    Do you want to install mathweb with SigSci sidecar? [y/n] (Default=n): " INSTALL_SIGSCI
     
+    helm delete \
+        "mathweb" \
+        --namespace $NAMESPACE > /dev/null 2>&1
+
+    if [ $INSTALL_SIGSCI == 'y' ]
+    then
+        helm upgrade \
+            "mathweb" \
+            ./sampleapps/mathweb/ \
+            --namespace $NAMESPACE \
+            -f ./sampleapps/mathweb/values.yaml \
+            --set ingress.annotations."kubernetes\.io/ingress\.class"="nginx-$NAMESPACE" \
+            --set sigsci.enabled=true \
+            --set sigsci.secret.accessKeyId=$SIGSCI_ACCESS_KEY \
+            --set sigsci.secret.secretAccessKey=$SIGSCY_SECRET_KEY \
+            --install \
+            --force
+    else
+            helm upgrade \
+            "mathweb" \
+            ./sampleapps/mathweb/ \
+            --namespace $NAMESPACE \
+            -f ./sampleapps/mathweb/values.yaml \
+            --set ingress.annotations."kubernetes\.io/ingress\.class"="nginx-$NAMESPACE" \
+            --set sigsci.enabled=false \
+            --install \
+            --force
+    fi
+fi
+
+echo -e ""
+read -p "Do you want to install the sample app 'nginxweb'? [y/n] (Default=n): " INSTALL_NGINXWEB
+INSTALL_NGINXWEB=${INSTALL_NGINXWEB:-n}
+
+if [ $INSTALL_NGINXWEB == 'y' ]
+then
+    helm delete \
+        "nginxweb" \
+        --namespace $NAMESPACE > /dev/null 2>&1
+        
     helm upgrade \
         "nginxweb" \
         ./sampleapps/nginxweb/ \
@@ -78,4 +135,3 @@ then
         --install \
         --force
 fi
-
