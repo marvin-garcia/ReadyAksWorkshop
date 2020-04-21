@@ -73,3 +73,16 @@ nodeSelector: {}
 tolerations: []
 
 affinity: {}
+
+sigsci:
+  enabled: true
+  image:
+    repository: signalsciences/sigsci-agent
+    tag: latest
+    pullPolicy: Always
+  accessKeyId: accesskeyid
+  secretAccessKey: secretaccesskey
+  secret:
+    name: mathweb-sigsci-secret
+    accessKeyId: __replace__
+    secretAccessKey: __replace__

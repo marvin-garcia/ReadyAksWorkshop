@@ -43,15 +43,45 @@ spec:
               port: {{ .Values.readinessProbe.port }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
+        {{- if .Values.sigsci.enabled }}
+        - name: sigsci-agent
+          image: "{{ .Values.sigsci.image.repository }}:{{ .Values.sigsci.image.tag }}"
+          imagePullPolicy: {{ .Values.sigsci.image.pullPolicy }}
+          env:
+          - name: SIGSCI_ACCESSKEYID
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Values.sigsci.secret.name }}
+                key: accesskeyid
+          - name: SIGSCI_SECRETACCESSKEY
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Values.sigsci.secret.name }}
+                key: secretaccesskey
+          # If required (default is /sigsci/tmp/sigsci.sock for the container)
+          #- name: SIGSCI_RPC_ADDRESS
+          #  value: /path/to/socket for UDS OR host:port if TCP
+          securityContext:
+            # The sigsci-agent container should run with its root filesystem read only
+            readOnlyRootFilesystem: true
+          volumeMounts:
+          - name: sigsci-tmp
+            mountPath: /sigsci/tmp
+        {{- end }}
+      {{- if .Values.sigsci.enabled }}
+      volumes:
+      - name: sigsci-tmp
+        emptyDir: {}
+      {{- end }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-    {{- with .Values.affinity }}
+      {{- with .Values.affinity }}
       affinity:
         {{- toYaml . | nindent 8 }}
-    {{- end }}
-    {{- with .Values.tolerations }}
+      {{- end }}
+      {{- with .Values.tolerations }}
       tolerations:
         {{- toYaml . | nindent 8 }}
-    {{- end }}
+      {{- end }}
